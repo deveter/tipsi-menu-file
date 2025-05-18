@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-n-j1#f7ws72p7#3(8t@)bopj9nv4xab@v@6gnb=5e!%!%=24u6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','tipsi-menu-photo.onrender.com','127.0.0.1:8000']
 
 
 # Application definition
