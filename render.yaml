@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: tipsi-menu-photo
+    env: python
+    plan: free
+
+    buildCommand:         
+      pip install -r requirements.txt
+      npm install --prefix frontend
+      npm run build --prefix frontend
+      mkdir -p backend/staticfiles
+      cp frontend/public/beep.mp3 backend/
+      cp frontend/public/ejemplo.webm backend/
+      cp frontend/public/favicon.ico backend/
+      cp -r frontend/dist/assets/* backend/staticfiles/
+      python manage.py collectstatic --noinput
+
+    startCommand: gunicorn backend.wsgi:application --timeout 240
+
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: DJANGO_SETTINGS_MODULE
+        value: backend.settings
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: ALLOWED_HOSTS
+        value: tipsi-menu-photo.onrender.com
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: EMAIL_HOST
+        value: smtp-relay.brevo.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: EMAIL_USE_TLS
+        value: True
