@@ -1,0 +1,14 @@
+Django>=5.0
+djangorestframework
+python-dotenv
+pandas
+openai
+django-cors-headers
+whitenoise
+dotenv
+gunicorn
+Pillow
+PyMuPDF
+python-docx
+requests
+openpyxl

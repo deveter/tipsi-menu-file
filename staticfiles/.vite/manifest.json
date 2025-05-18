@@ -1,0 +1,58 @@
+{
+  "index.html": {
+    "file": "assets/index-B5OrESXn.js",
+    "name": "index",
+    "src": "index.html",
+    "isEntry": true,
+    "css": [
+      "assets/index-C4lRlTNP.css"
+    ],
+    "assets": [
+      "assets/tipsi-logo-YP07V9Q8.png",
+      "assets/Cámara título-DZPND9B3.png",
+      "assets/Instrucciones-Ctf1LYAT.png",
+      "assets/Añadir plato-LSSIPH_i.png",
+      "assets/Enviar a Tipsi-C15Uv5aI.png",
+      "assets/Reloj de arena-C_sPYXTA.png",
+      "assets/Completar formulario-BuHm719n.png",
+      "assets/Smile face de completar formulario-DKgsSFjf.png",
+      "assets/favicon-CjU1YI4z.ico"
+    ]
+  },
+  "src/assets/Añadir plato.png": {
+    "file": "assets/Añadir plato-LSSIPH_i.png",
+    "src": "src/assets/Añadir plato.png"
+  },
+  "src/assets/Completar formulario.png": {
+    "file": "assets/Completar formulario-BuHm719n.png",
+    "src": "src/assets/Completar formulario.png"
+  },
+  "src/assets/Cámara título.png": {
+    "file": "assets/Cámara título-DZPND9B3.png",
+    "src": "src/assets/Cámara título.png"
+  },
+  "src/assets/Enviar a Tipsi.png": {
+    "file": "assets/Enviar a Tipsi-C15Uv5aI.png",
+    "src": "src/assets/Enviar a Tipsi.png"
+  },
+  "src/assets/Instrucciones.png": {
+    "file": "assets/Instrucciones-Ctf1LYAT.png",
+    "src": "src/assets/Instrucciones.png"
+  },
+  "src/assets/Reloj de arena.png": {
+    "file": "assets/Reloj de arena-C_sPYXTA.png",
+    "src": "src/assets/Reloj de arena.png"
+  },
+  "src/assets/Smile face de completar formulario.png": {
+    "file": "assets/Smile face de completar formulario-DKgsSFjf.png",
+    "src": "src/assets/Smile face de completar formulario.png"
+  },
+  "src/assets/favicon.ico": {
+    "file": "assets/favicon-CjU1YI4z.ico",
+    "src": "src/assets/favicon.ico"
+  },
+  "src/assets/tipsi-logo.png": {
+    "file": "assets/tipsi-logo-YP07V9Q8.png",
+    "src": "src/assets/tipsi-logo.png"
+  }
+}
