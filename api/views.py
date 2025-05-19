@@ -42,6 +42,20 @@ Formato del JSON:
 No incluyas ningún comentario ni explicación. Solo el JSON.
 """
 
+def extract_json_array(texto):
+    try:
+        texto = texto.strip()
+        if texto.startswith("```json"):
+            texto = texto.removeprefix("```json").strip()
+        if texto.endswith("```"):
+            texto = texto.removesuffix("```").strip()
+
+        parsed = json.loads(texto)
+        return parsed if isinstance(parsed, list) else []
+    except Exception as e:
+        print("❌ Error en json.loads:", e)
+        return []
+
 # 📄 Extraer texto de Word
 def extract_text_from_docx(file):
     doc = Document(file)
@@ -53,6 +67,7 @@ def extract_text_from_pdf(file):
     pdf = fitz.open(stream=file.read(), filetype="pdf")
     for page in pdf:
         text += page.get_text()
+        print(text)
     return text
 
 # 🖼️ Procesar una imagen individual con OpenAI
@@ -104,14 +119,20 @@ def procesar_texto_con_openai(texto):
                 {"role": "system", "content": "Eres un asistente que analiza cartas de restaurante."},
                 {"role": "user", "content": f"{PROMPT}\n\n{texto}"}
             ],
-            max_tokens=2000,
+            max_tokens=8000,
             temperature=0.2
         )
+
         content = response.choices[0].message.content
-        match = re.search(r"\[\s*{.*?}\s*]", content, re.DOTALL)
-        return json.loads(match.group(0)) if match else []
+        print("📥 Contenido OpenAI:\n", content)
+
+        resultado = extract_json_array(content)
+        print("🔍 Resultado JSON parseado:", resultado)
+
+        return resultado
+
     except Exception as e:
-        logger.exception("❌ Error al procesar texto:")
+        logger.exception("❌ Error al procesar texto con OpenAI:")
         return []
 
 class TranscribeView(APIView):
