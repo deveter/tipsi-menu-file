@@ -98,13 +98,13 @@ def procesar_imagen_con_openai(image_file):
                 {"role": "system", "content": "Eres un asistente que analiza cartas de restaurante."},
                 {"role": "user", "content": [{"type": "text", "text": PROMPT}] + image_msg}
             ],
-            max_tokens=2000,
+            max_tokens=4000,
             temperature=0.2
         )
 
         content = response.choices[0].message.content
-        match = re.search(r"\[\s*{.*?}\s*]", content, re.DOTALL)
-        return json.loads(match.group(0)) if match else []
+        print("📸 Contenido OpenAI (imagen):\n", content)        
+        return extract_json_array(content)
 
     except Exception as e:
         logger.exception("❌ Error al procesar imagen:")
