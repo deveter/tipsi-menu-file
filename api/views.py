@@ -22,25 +22,33 @@ from django.http import HttpResponse, Http404
 from django.views.generic import View
 from django.conf import settings
 
+
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 logger = logging.getLogger(__name__)
 
 PROMPT = """
-Extrae todos los productos de esta carta de restaurante con su familia/Sección, precio y formato
+Extrae todos los productos de esta carta de restaurante con su familia/Sección, precio y formato. No incluyas ningún comentario ni explicación. Sólo el JSON con este formato:
 
-Formato del JSON:
 [
   {
     "familia": "Nombre de la sección",
     "producto": "Nombre del plato",
-    "precio": número sin símbolo €,
+    "precio": número sin €,
     "formato": "tapa", "ración", etc. Si no se indica, pon "Único"
   }
 ]
-
-No incluyas ningún comentario ni explicación. Solo el JSON.
 """
+
+def recortar_bordes_si_hay(imagen: Image.Image) -> Image.Image:
+    # Crea una imagen blanca del mismo tamaño
+    bg = Image.new(imagen.mode, imagen.size, imagen.getpixel((0, 0)))
+    diff = ImageChops.difference(imagen, bg)
+    bbox = diff.getbbox()
+    if bbox:
+        return imagen.crop(bbox)
+    return imagen
+
 
 def extract_json_array(texto):
     try:
@@ -98,7 +106,7 @@ def procesar_imagen_con_openai(image_file):
                 {"role": "system", "content": "Eres un asistente que analiza cartas de restaurante."},
                 {"role": "user", "content": [{"type": "text", "text": PROMPT}] + image_msg}
             ],
-            max_tokens=4000,
+            max_tokens=8192,
             temperature=0.2
         )
 
@@ -193,7 +201,7 @@ class EnviarCartaView(APIView):
         email = request.data.get("email")
         carta = request.data.get("carta")
 
-        if not nombre or not email or not carta:
+        if not nombre or not carta:
             return Response({"error": "Faltan datos"}, status=400)
 
         try:
@@ -206,7 +214,7 @@ class EnviarCartaView(APIView):
             cuerpo = f"El restaurante '{nombre}' con email '{email}' ha enviado su carta adjunta en Excel."
 
             enviar_email_brevo(
-                destinatario="ppinar@tipsitpv.com",
+                destinatario="customer@tipsitpv.com",
                 asunto=asunto,
                 cuerpo=cuerpo,
                 adjunto=excel_path
