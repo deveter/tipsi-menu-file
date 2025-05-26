@@ -174,12 +174,26 @@ class TranscribeView(APIView):
         # 🖼️ Procesar imágenes
         if is_all_images:
             all_results = []
-            with ThreadPoolExecutor(max_workers=min(8, len(files))) as executor:
-                futures = {executor.submit(procesar_imagen_con_openai, f): f.name for f in files}
-                for future in as_completed(futures):
-                    result = future.result()
-                    if isinstance(result, list):
-                        all_results.extend(result)
+            with ThreadPoolExecutor(max_workers=min(9, len(files))) as executor:
+                future_to_index = {
+                    executor.submit(procesar_imagen_con_openai, f): i
+                    for i, f in enumerate(files)
+                }
+
+                results_by_index = {}
+
+                for future in as_completed(future_to_index):
+                    index = future_to_index[future]
+                    try:
+                        result = future.result()
+                        results_by_index[index] = result if isinstance(result, list) else []
+                    except Exception as e:
+                        logger.exception(f"❌ Error procesando imagen {index}:")
+                        results_by_index[index] = []
+
+                for i in sorted(results_by_index.keys()):
+                    all_results.extend(results_by_index[i])
+          
             print(f"✅ Procesamiento de imágenes: {time.time() - start:.2f} s")
             return Response({"structured": all_results})
 
