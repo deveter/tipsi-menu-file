@@ -82,6 +82,11 @@ def extract_text_from_pdf(file):
 def procesar_imagen_con_openai(image_file):
     try:
         image = Image.open(image_file)
+
+        if image.mode == "RGBA":
+            image = image.convert("RGB")
+
+
         max_width = 1280
         if image.width > max_width:
             ratio = max_width / image.width
