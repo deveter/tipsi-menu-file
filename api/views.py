@@ -169,7 +169,7 @@ class TranscribeView(APIView):
         # 🖼️ Procesar imágenes
         if is_all_images:
             all_results = []
-            with ThreadPoolExecutor(max_workers=min(4, len(files))) as executor:
+            with ThreadPoolExecutor(max_workers=min(8, len(files))) as executor:
                 futures = {executor.submit(procesar_imagen_con_openai, f): f.name for f in files}
                 for future in as_completed(futures):
                     result = future.result()
