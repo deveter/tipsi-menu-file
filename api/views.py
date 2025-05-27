@@ -28,7 +28,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 logger = logging.getLogger(__name__)
 
 PROMPT = """
-Extrae todos los productos de esta carta de restaurante con su familia/Sección, precio y formato. No incluyas ningún comentario ni explicación. Fíjate bien en los precios de cada uno de ellos y el formato al que corresponde. Énvíame sólo el JSON con este formato:
+Extrae todos los productos de esta carta de restaurante con su familia/Sección, precio y formato. No incluyas ningún comentario ni explicación. Fíjate bien en los precios de cada uno de ellos y el formato al que corresponde. Si un producto sólo tiene un precio, el formato es ÚNICO. Énvíame sólo el JSON con este formato:
 
 [
   {
