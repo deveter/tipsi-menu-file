@@ -219,6 +219,8 @@ class EnviarCartaView(APIView):
         nombre = request.data.get("nombre_restaurante")
         email = request.data.get("email")
         carta = request.data.get("carta")
+        archivos = request.data.get("archivos_extra", [])
+        print("📎 Archivos recibidos:", archivos)
 
         if not nombre or not carta:
             return Response({"error": "Faltan datos"}, status=400)
@@ -229,14 +231,30 @@ class EnviarCartaView(APIView):
                 excel_path = tmp.name
                 df.to_excel(excel_path, index=False)
 
+            adjuntos = [{
+                "name": "Carta - " + nombre + ".xlsx",
+                "path": excel_path
+            }]
+
+            for archivo in archivos:
+                nombre_archivo = archivo.get("name")
+                contenido = archivo.get("content")
+                if nombre_archivo and contenido:
+                    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+                        tmp_file.write(base64.b64decode(contenido))
+                        adjuntos.append({
+                            "name": nombre_archivo,
+                            "path": tmp_file.name
+                        })
+
             asunto = f"📋 Nueva carta enviada por {nombre}"
-            cuerpo = f"El restaurante '{nombre}' con email '{email}' ha enviado su carta adjunta en Excel."
+            cuerpo = f"El restaurante '{nombre}' ha enviado su carta adjunta en Excel.\nEmail de contacto: {email or '(no proporcionado)'}"
 
             enviar_email_brevo(
                 destinatario="customer@tipsitpv.com",
                 asunto=asunto,
                 cuerpo=cuerpo,
-                adjunto=excel_path
+                adjuntos=adjuntos
             )
 
             return Response({"message": "Carta enviada correctamente"})
@@ -244,7 +262,6 @@ class EnviarCartaView(APIView):
         except Exception as e:
             logger.exception("❌ Error al enviar el email:")
             return Response({"error": str(e)}, status=500)
-
 
 class FrontendAppView(View):
     def get(self, request):
