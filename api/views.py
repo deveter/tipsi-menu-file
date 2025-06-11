@@ -211,7 +211,6 @@ class TranscribeView(APIView):
         return Response({"structured": resultado})
 
 
-    
 class EnviarCartaView(APIView):
     parser_classes = [JSONParser]
 
@@ -220,38 +219,51 @@ class EnviarCartaView(APIView):
         email = request.data.get("email")
         carta = request.data.get("carta")
         archivos = request.data.get("archivos_extra", [])
-        print("📎 Archivos recibidos:", archivos)
 
         if not nombre or not carta:
             return Response({"error": "Faltan datos"}, status=400)
 
         try:
             df = pd.DataFrame(carta)
+            print("Columnas recibidas:", df.columns.tolist())
+
+            # Renombrar 'producto' a 'articulo'
+            df = df.rename(columns={'producto': 'articulo'})
+
+            # Limpieza opcional (espacios/minúsculas)
+            df.columns = (
+                df.columns
+                  .astype(str)
+                  .str.strip()
+                  .str.lower()
+            )
+
+            # Reordenar las columnas
+            nuevo_orden = ["articulo", "formato", "precio", "familia"]
+            df = df[nuevo_orden]
+
             with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
                 excel_path = tmp.name
                 df.to_excel(excel_path, index=False)
 
-            adjuntos = [{
-                "name": "Carta - " + nombre + ".xlsx",
-                "path": excel_path
-            }]
+            adjuntos = [{"name": f"Carta - {nombre}.xlsx", "path": excel_path}]
 
             for archivo in archivos:
-                nombre_archivo = archivo.get("name")
+                n_archivo = archivo.get("name")
                 contenido = archivo.get("content")
-                if nombre_archivo and contenido:
+                if n_archivo and contenido:
                     with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
                         tmp_file.write(base64.b64decode(contenido))
-                        adjuntos.append({
-                            "name": nombre_archivo,
-                            "path": tmp_file.name
-                        })
+                    adjuntos.append({"name": n_archivo, "path": tmp_file.name})
 
             asunto = f"📋 Nueva carta enviada por {nombre}"
-            cuerpo = f"El restaurante '{nombre}' ha enviado su carta adjunta en Excel.\nEmail de contacto: {email or '(no proporcionado)'}"
+            cuerpo = (
+                f"El restaurante '{nombre}' ha enviado su carta adjunta en Excel.\n"
+                f"Email de contacto: {email or '(no proporcionado)'}"
+            )
 
             enviar_email_brevo(
-                destinatario="customer@tipsitpv.com",
+                destinatario="ppinar@tipsitpv.com",
                 asunto=asunto,
                 cuerpo=cuerpo,
                 adjuntos=adjuntos
@@ -262,6 +274,7 @@ class EnviarCartaView(APIView):
         except Exception as e:
             logger.exception("❌ Error al enviar el email:")
             return Response({"error": str(e)}, status=500)
+   
 
 class FrontendAppView(View):
     def get(self, request):
