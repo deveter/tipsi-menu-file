@@ -263,7 +263,7 @@ class EnviarCartaView(APIView):
             )
 
             enviar_email_brevo(
-                destinatario="ppinar@tipsitpv.com",
+                destinatario="customer@tipsitpv.com",
                 asunto=asunto,
                 cuerpo=cuerpo,
                 adjuntos=adjuntos
